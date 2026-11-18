@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>棋盘战术游戏 - 原型1.2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:20px;background:#171b24;color:#edf1f7;font-family:"Microsoft YaHei",system-ui,sans-serif}.app{max-width:1000px;margin:auto}h1{margin:0 0 6px}.sub{color:#aab4c4;line-height:1.6}.layout{display:grid;grid-template-columns:minmax(300px,1fr) 290px;gap:18px}.boardbox,.panel{background:#222936;border:1px solid #394456;border-radius:14px;padding:14px}.board{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;aspect-ratio:1}.cell{border:1px solid #657184;border-radius:5px;background:#d6dce5;color:#17202c;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;font-weight:bold;font-size:clamp(15px,3vw,27px);min-width:0;padding:0}.cell:nth-child(16n+1),.cell:nth-child(16n+3),.cell:nth-child(16n+5),.cell:nth-child(16n+7),.cell:nth-child(16n+10),.cell:nth-child(16n+12),.cell:nth-child(16n+14),.cell:nth-child(16n+16){background:#aeb9c9}.cell:hover{outline:3px solid #f5c451;outline-offset:-3px}.player{background:#b8d9ff!important}.player.threatened{background:#ff8e8e!important;outline:4px solid #e04444;outline-offset:-4px;box-shadow:inset 0 0 0 4px #ffe2a8}.enemy.threat-source{outline:3px solid #e04444;outline-offset:-3px}.warningNotice{min-height:28px;margin:0 0 10px;padding:7px 9px;border-radius:7px;background:#303b4c;color:#b8c2d1;font-size:12px;line-height:1.5}.warningNotice.danger{background:#512f35;color:#ffd4d4;border:1px solid #b95757}.enemy{background:#f2b8b8!important}.supply{background:#b9e6c5!important;color:#176b39!important;border:2px solid #42a66a!important}.selected{outline:3px solid #f0bd4e;outline-offset:-3px}.hp,.hint{font-size:10px;color:#263243}.panel h2{margin:0 0 10px;font-size:18px}.stat{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #394456}.controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.controls button,.weapon{border:0;border-radius:8px;padding:9px 7px;font-weight:bold;cursor:pointer;background:#3b485d;color:#fff}.weapon.active{background:#f0bd4e;color:#202938}.wide{grid-column:1/-1}.action{border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer;background:#f0bd4e;color:#202938;width:100%;margin-top:7px}.help{color:#b8c2d1;font-size:12px;line-height:1.6;margin-top:12px}.resultPanel{margin-top:12px;padding:12px;border:1px solid #65758d;border-radius:10px;background:#2c394b;line-height:1.7}.resultPanel.hidden{display:none}.resultPanel h3{margin:0 0 6px;color:#f5d27b}.resultPanel .resultScore{font-size:20px;font-weight:bold;color:#f5d27b}.resultPanel button{border:0;border-radius:8px;padding:9px 12px;margin:8px 6px 0 0;font-weight:bold;cursor:pointer;background:#f0bd4e;color:#202938}.log{margin-top:12px;padding:9px;background:#171e29;border-radius:8px;min-height:90px;max-height:160px;overflow:auto;color:#cbd4e1;font-size:12px;line-height:1.6}.log div{border-bottom:1px solid #2d3746;padding:3px 0}.status{color:#f5d27b;font-weight:bold;min-height:22px}.note{font-size:11px;color:#aab4c4}@media(max-width:760px){.layout{grid-template-columns:1fr}.panel{order:-1}body{padding:10px}}
+
+/* 1.0界面与操作体验优化 */
+:root{color-scheme:dark}body{background:radial-gradient(ellipse at 15% 0%,#26354a 0,#171d29 48%,#111722 100%);padding:24px}.app{max-width:1120px}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.eyebrow{font-size:11px;letter-spacing:2px;color:#e6bb61;font-weight:800}.version{font-size:11px;color:#aebbd0;border:1px solid #46546a;padding:5px 9px;border-radius:20px}.sub{margin-top:0}.layout{grid-template-columns:minmax(320px,1fr) 320px;gap:20px}.boardbox,.panel{background:linear-gradient(145deg,#263142,#202a39);border-color:#43516a;box-shadow:0 14px 36px #080d1680}.boardbox{padding:18px}.panel{padding:17px}.board{gap:4px}.cell{border-radius:7px;border-color:#66758b;transition:filter .12s,transform .12s,outline-color .12s}.cell:hover{filter:brightness(1.08);transform:translateY(-1px)}.cell.validMove{background:#bce8c9!important;border:2px solid #37a968!important;box-shadow:inset 0 0 0 2px #e8fff0}.cell.validMove:after{content:'●';font-size:12px;color:#23844a}.cell.player{box-shadow:inset 0 0 0 3px #5b9de8}.cell.enemy{box-shadow:inset 0 0 0 2px #d57e7e}.cell.supply{box-shadow:inset 0 0 0 2px #50b878}.status{padding:10px 12px;background:#303d50;border:1px solid #4b5d78;border-radius:9px;margin-bottom:10px;min-height:42px}.warningNotice{font-size:12px}.panel h2{font-size:15px;letter-spacing:.3px;color:#e8c879;margin-top:16px}.stat{font-size:13px}.stat b{color:#f3f5fa}.controls button,.weapon,.action,.resultPanel button{transition:filter .12s,transform .12s,opacity .12s}.controls button:hover,.action:hover,.resultPanel button:hover{filter:brightness(1.12);transform:translateY(-1px)}button:disabled{opacity:.38;cursor:not-allowed;transform:none!important;filter:none!important}.weapon{border:1px solid #52627a}.weapon.active{border-color:#f5d27b;box-shadow:0 0 0 2px #f0bd4e33}.action{letter-spacing:.2px}.help{max-height:340px;overflow:auto;padding:12px;background:#1b2431;border:1px solid #37465b;border-radius:9px}.log{max-height:180px}.resultPanel{border-color:#c69b4a;background:linear-gradient(145deg,#39445a,#2a3548)}.phasebar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:9px 12px;background:#1b2635;border:1px solid #3e4e65;border-radius:9px;font-size:12px;color:#c7d2e2}.phasebar strong{color:#f3d17e}.boardlegend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;color:#aebbd0;font-size:11px}.legenditem{display:flex;align-items:center;gap:5px}.swatch{width:10px;height:10px;border-radius:3px;display:inline-block}.swatch.player{background:#83baff}.swatch.enemy{background:#e99d9d}.swatch.supply{background:#69c98c}.swatch.valid{background:#bce8c9;border:1px solid #37a968}.cell.attackRange{background:#f6d49a!important;border:2px solid #d58a25!important;box-shadow:inset 0 0 0 2px #fff0cf}.cell.enemy.attackRange{outline:3px solid #e39a32;outline-offset:-4px;box-shadow:inset 0 0 0 3px #ffd98c}.cell.supply.attackRange{outline:3px solid #d58a25;outline-offset:-4px}
+@media(max-width:760px){body{padding:10px}.layout{grid-template-columns:1fr}.panel{order:0}.boardbox{padding:10px}.topline{align-items:flex-start}.help{max-height:none}}
+
+/* 1.2 棋子视觉表现优化 */
+.cell{position:relative;overflow:hidden;gap:1px}
+.piece{width:clamp(30px,5.4vw,54px);height:clamp(30px,5.4vw,54px);display:grid;place-items:center;border-radius:50%;font-size:clamp(20px,3.6vw,37px);line-height:1;text-shadow:0 2px 2px #0005;box-shadow:inset 0 2px 3px #ffffff75,inset 0 -4px 6px #0003,0 3px 5px #0003;border:2px solid #fff;z-index:1}
+.player-piece{color:#12385f;background:radial-gradient(circle at 35% 25%,#fff 0,#d8edff 34%,#6ca9e8 100%)}
+.enemy-piece{color:#702d32;background:radial-gradient(circle at 35% 25%,#fff0ec 0,#f2b5aa 42%,#c66c70 100%);border-color:#fff0e9}
+.cannon-piece{color:#633e19;background:radial-gradient(circle at 35% 25%,#fff4d6 0,#f0cf8b 42%,#bd8b45 100%);border-color:#fff3d5}
+.piece-name{font-size:10px;font-weight:800;line-height:1.1;letter-spacing:.5px;color:#263243;z-index:1}
+.hp{font-size:10px;font-weight:800;line-height:1.1;padding:2px 5px;border-radius:8px;background:#263243;color:#fff;z-index:1}
+.player .piece-name{color:#16416d}.enemy .piece-name{color:#702d32}
+.supply-mark{width:clamp(30px,5.4vw,54px);height:clamp(30px,5.4vw,54px);display:grid;place-items:center;border-radius:14px;background:radial-gradient(circle at 35% 25%,#f5ffe9,#80d6a0 65%,#31965b);color:#fff;font-size:clamp(22px,3.8vw,38px);text-shadow:0 2px 4px #175b36;box-shadow:inset 0 2px 3px #ffffff90,0 3px 6px #0003}
+.cell.player{background:linear-gradient(145deg,#d9edff,#9dc8f5)!important}
+.cell.enemy{background:linear-gradient(145deg,#ffe1dc,#e9a7a7)!important}
+.cell.supply{background:linear-gradient(145deg,#e0f7e5,#a5dfb6)!important}
+.cell.player.threatened{background:linear-gradient(145deg,#ffd1c9,#f27e7e)!important}
+.cell.validMove:after{position:absolute;bottom:4px;right:6px;z-index:0}
+.cell.attackRange{background:linear-gradient(145deg,#fff0cf,#edc17b)!important}
+</style></head>
+<body><main class="app">
+<div class="topline"><div><div class="eyebrow">TACTICAL CHESS ROGUELITE · DEMO</div><h1>棋盘战术游戏</h1><p class="sub">原型 1.2 · 棋子视觉优化 · 8×8 战术棋盘</p></div><span class="version">PLAYABLE DEMO 1.2</span></div>
+<div class="layout">
+<section class="boardbox"><div class="phasebar"><span>当前阶段：<strong id="phaseLabel">玩家行动</strong></span><span>回合 <strong id="turnLabel">0</strong></span><span>进度 <strong id="progressLabel">第 1 / 3 关</strong></span></div><p class="status" id="status">选择武器和攻击方向，然后移动或攻击。橙色格为当前攻击范围预览。</p><div class="warningNotice" id="threatNotice">威胁预警：正在分析敌人攻击范围。</div><div class="board" id="board"></div><div class="boardlegend"><span class="legenditem"><i class="swatch player"></i>玩家</span><span class="legenditem"><i class="swatch enemy"></i>敌人</span><span class="legenditem"><i class="swatch supply"></i>飞刀补给</span><span class="legenditem"><i class="swatch valid"></i>可移动位置</span><span class="legenditem"><i class="swatch" style="background:#f6d49a;border:1px solid #d58a25"></i>当前攻击范围</span></div></section>
+<aside class="panel"><h2>战场信息</h2>
+<div class="stat"><span>当前关卡</span><b id="level">1 / 3</b></div><div class="stat"><span>本关回合</span><b id="stageTurns">0</b></div><div class="stat"><span>累计击败</span><b id="killTotal">0</b></div><div class="stat"><span>玩家生命</span><b id="playerHp">3 / 3</b></div><div class="stat"><span>当前武器</span><b id="weaponName">刀盾</b></div><div class="stat"><span>飞刀弹药</span><b id="ammo">—</b></div><div class="stat"><span>剩余补给点</span><b id="supplyCount">1</b></div><div class="stat"><span>刀盾免伤</span><b id="shield">可用</b></div><div class="stat"><span>剩余敌人</span><b id="enemyCount">3</b></div><div class="stat"><span>当前直接威胁</span><b id="threatCount">0</b></div>
+<h2 style="margin-top:14px">特殊移动（每关各1次）</h2><div class="controls" id="moveControls"><button class="weapon" data-move="rook">车：直线</button><button class="weapon" data-move="horse">马：走日</button><button class="weapon" data-move="elephant">象：斜两格</button><button class="weapon" data-move="guard">士：斜一格</button></div><div class="note" id="moveStats">车 1/1 · 马 1/1 · 象 1/1 · 士 1/1</div>
+<h2 style="margin-top:14px">选择武器</h2><div class="controls" id="weaponControls">
+<button class="weapon active" data-weapon="shield">刀盾</button><button class="weapon" data-weapon="spear">长枪</button><button class="weapon" data-weapon="throwing">飞刀</button><button class="weapon" data-weapon="dual">双刀</button></div>
+<h2>攻击方向</h2><div class="controls">
+<button class="weapon" data-dir="up">↑ 上</button><button class="weapon" data-dir="down">↓ 下</button><button class="weapon" data-dir="left">← 左</button><button class="weapon" data-dir="right">→ 右</button></div>
+<button class="action" id="stayBtn" style="background:#52647a;color:white">原地不动，进入攻击阶段</button><button class="action" id="attackBtn">使用当前武器攻击</button><button class="action" id="endTurn" style="background:#59677d;color:white">结束回合（跳过攻击）</button><button class="action" id="nextLevel" style="display:none">进入下一关</button><button class="action" id="restart">重新开始</button>
+<div class="help"><b>本版新增：战斗结算与关卡评价</b><br>每关胜利后统计剩余生命、战斗回合数和击败敌人数，并给出S/A/B评价；完成第三关后显示总评。单关S：3点生命且回合数达到本关优秀标准（第一关5回合、第二关6回合、第三关7回合以内）；A：至少剩余2点生命且不超过优秀标准2回合；其余胜利为B。总评按累计星数：8–9星为S，6–7星为A，3–5星为B。<hr><b>前版功能：敌人威胁预警</b><br>红色高亮的玩家格表示当前至少有一名敌人具备直接攻击条件；红色描边的敌人是威胁来源。右侧会显示可直接攻击的敌人数。预警只判断当前棋盘局面，不预测敌人移动后的下一步位置；刀盾每关仍只能免疫一次攻击。<br><br><b>本版规则</b><br>每回合先移动（基础移动或特殊移动，二选一），再进行一次武器攻击；也可原地不动进入攻击阶段。<br>飞刀补给：绿色✦格为补给点，移动到该格自动获得2枚飞刀；弹药上限8枚，满弹药时不会消耗补给点。<br>车：横向或纵向直线移动至任意合法空格，路径不能被阻挡。<br>马：按象棋走日，保留马腿阻挡。<br>象：斜向移动两格，象眼不能被阻挡。<br>士：斜向移动一格。<br>四种特殊移动各自每关限用一次，进入下一关重置。<br>刀盾：前方固定4格，每个敌人2伤害；每关免疫一次攻击。<br>长枪：直线4格，首个敌人4伤害，后续敌人2伤害。<br>飞刀：直线5格，只伤害首个敌人3点；初始6枚，弹药上限8枚。踩到补给点增加2枚；满弹药时补给点保留。相邻敌人可用匕首攻击1点，不耗弹药。<br>双刀：点击相邻敌人选取两次，每次2伤害；可重复选择同一敌人。<br>攻击范围预览：橙色格表示当前武器和方向对应的范围；飞刀只显示命中路径上的首个敌人及其之前的格子。预览会随移动、武器和方向选择实时更新。<hr> <b>敌人 AI（本版新增）</b><br>炮：固定不动；仅正前方、左、右三个方向可攻击，且中间恰好隔着一个棋子。<br>马：按象棋“走日”移动与攻击；马腿被占据时不能行动。<br>车：沿横线或竖线移动；路径无阻挡时可直线攻击。<br>敌人行动顺序：炮 → 马 → 车。<br><span class="note">移动、攻击均会触发敌人回合。共3个固定关卡：第一关3名敌人、第二关4名、第三关5名；敌人按炮→马→车行动，同类型敌人会依次行动。通关后点击“进入下一关”。炮架可以是玩家或其他敌人。</span></div>
+<div class="resultPanel hidden" id="resultPanel" aria-live="polite"><h3 id="resultTitle">关卡结算</h3><div id="resultBody"></div></div><div class="log" id="log"></div></aside></div></main>
+<script>
+const N=8, board=document.querySelector("#board"), statusEl=document.querySelector("#status"), logEl=document.querySelector("#log");
+const dirs={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+let player,enemies,over,busy,weapon,direction,ammo,shieldReady,dualPicks,level=1;
+let specialMoves,moveMode,movedThisTurn,supplies;
+let stageTurns=0,totalTurns=0,totalKills=0,stageKills=0,stageResults=[];
+const stages=[
+ {player:{x:1,y:6},enemies:[{type:"车",x:6,y:1,hp:5,max:5},{type:"马",x:5,y:5,hp:3,max:3},{type:"炮",x:1,y:1,hp:4,max:4}],supplies:[{x:3,y:5}]},
+ {player:{x:3,y:6},enemies:[{type:"车",x:0,y:1,hp:5,max:5},{type:"马",x:6,y:4,hp:3,max:3},{type:"马",x:1,y:3,hp:3,max:3},{type:"炮",x:3,y:0,hp:4,max:4}],supplies:[{x:1,y:5},{x:6,y:6}]},
+ {player:{x:4,y:6},enemies:[{type:"车",x:7,y:0,hp:5,max:5},{type:"车",x:0,y:2,hp:5,max:5},{type:"马",x:1,y:4,hp:3,max:3},{type:"马",x:6,y:3,hp:3,max:3},{type:"炮",x:4,y:0,hp:4,max:4}],supplies:[{x:2,y:2},{x:6,y:5}]}
+];
+const alive=()=>enemies.filter(e=>e.hp>0);
+const enemyAt=(x,y)=>enemies.find(e=>e.hp>0&&e.x===x&&e.y===y);
+const inside=(x,y)=>x>=0&&x<N&&y>=0&&y<N;
+const occupied=(x,y)=>player.x===x&&player.y===y||!!enemyAt(x,y);
+const pieceAt=(x,y)=>player.x===x&&player.y===y?player:enemyAt(x,y);
+const say=s=>statusEl.textContent=s;
+function log(s){let d=document.createElement("div");d.textContent=s;logEl.prepend(d)}
+function loadStage(resetAll=false){const stage=stages[level-1];stageTurns=0;stageKills=0;document.querySelector("#resultPanel").classList.add("hidden");supplies=stage.supplies.map((p,i)=>({...p,id:i,available:true}));player={x:stage.player.x,y:stage.player.y,hp:resetAll?3:player.hp,max:3};enemies=stage.enemies.map(e=>({...e,reported:false}));over=false;busy=false;ammo=6;shieldReady=true;dualPicks=0;specialMoves={rook:1,horse:1,elephant:1,guard:1};moveMode=null;movedThisTurn=false;document.querySelector("#nextLevel").style.display="none";log(`第${level}关开始，共${stage.enemies.length}名敌人。敌方行动顺序：炮 → 马 → 车。`);updateControls();say(`第${level}关：你的回合，移动或使用当前武器攻击。`);render()}
+function init(){level=1;weapon="shield";direction="up";totalTurns=0;totalKills=0;stageResults=[];logEl.innerHTML="";loadStage(true)}
+function updateControls(){document.querySelectorAll("[data-move]").forEach(b=>{b.classList.toggle("active",b.dataset.move===moveMode);b.disabled=over||busy||movedThisTurn||specialMoves[b.dataset.move]===0});document.querySelector("#moveStats").textContent=`车 ${specialMoves.rook}/1 · 马 ${specialMoves.horse}/1 · 象 ${specialMoves.elephant}/1 · 士 ${specialMoves.guard}/1`;document.querySelector("#stayBtn").disabled=over||busy||movedThisTurn;document.querySelector("#attackBtn").disabled=over||busy||!movedThisTurn;document.querySelector("#endTurn").disabled=over||busy;document.querySelectorAll("[data-weapon]").forEach(b=>b.classList.toggle("active",b.dataset.weapon===weapon));document.querySelectorAll("[data-dir]").forEach(b=>b.classList.toggle("active",b.dataset.dir===direction));document.querySelector("#weaponName").textContent={shield:"刀盾",spear:"长枪",throwing:"飞刀",dual:"双刀"}[weapon];document.querySelector("#ammo").textContent=weapon==="throwing"?`${ammo} / 8`:"—";document.querySelector("#supplyCount").textContent=supplies.filter(p=>p.available).length;document.querySelector("#shield").textContent=shieldReady?"可用":"已触发"}
+function getAttackCells(){
+ const cells=[];const add=(x,y)=>{if(inside(x,y)&&!cells.some(c=>c.x===x&&c.y===y))cells.push({x,y})};
+ if(weapon==="shield"){
+  const [dx,dy]=dirs[direction],px=-dy,py=dx;
+  add(player.x+dx,player.y+dy);add(player.x+2*dx+px,player.y+2*dy+py);add(player.x+2*dx,player.y+2*dy);add(player.x+2*dx-px,player.y+2*dy-py);
+ }else if(weapon==="spear"){
+  for(const c of rayCells(4))add(c.x,c.y);
+ }else if(weapon==="throwing"){
+  if(ammo>0){for(const c of rayCells(5)){add(c.x,c.y);if(enemyAt(c.x,c.y))break}}
+  else if(movedThisTurn){for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])add(player.x+dx,player.y+dy)}
+ }else if(weapon==="dual"){
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])add(player.x+dx,player.y+dy);
+ }
+ return cells;
+}
+function render(){board.innerHTML="";const threats=getThreats();const attackCells=getAttackCells();for(let y=0;y<N;y++)for(let x=0;x<N;x++){let b=document.createElement("button");b.className="cell";b.type="button";let e=enemyAt(x,y);if(attackCells.some(c=>c.x===x&&c.y===y))b.classList.add("attackRange");const legalHint=!over&&!busy&&!movedThisTurn&&!e&&(moveMode?canSpecialMove(moveMode,x,y):Math.abs(player.x-x)+Math.abs(player.y-y)===1);if(legalHint)b.classList.add("validMove");if(player.x===x&&player.y===y){b.classList.add("player");if(threats.length)b.classList.add("threatened");b.innerHTML="<span class='piece player-piece'>♚</span><span class='piece-name'>玩家</span>"}else if(e){b.classList.add("enemy");if(threats.includes(e))b.classList.add("threat-source");b.innerHTML=`<span class="piece enemy-piece ${e.type==='炮'?'cannon-piece':''}">${e.type==='车'?'♜':e.type==='马'?'♞':'✹'}</span><span class="piece-name">${e.type}</span><span class="hp">${e.hp}/${e.max}</span>`}else if(supplies.some(p=>p.available&&p.x===x&&p.y===y)){b.classList.add("supply");b.innerHTML="<span class='supply-mark'>✦</span><span class='piece-name'>补给 +2</span>"}else b.innerHTML="";b.setAttribute("aria-label",`${String.fromCharCode(65+x)}${y+1}${legalHint?'，可移动':''}${e?`，${e.type}，生命${e.hp}`:''}`);b.addEventListener("click",()=>cellClick(x,y));board.append(b)}
+document.querySelector("#stageTurns").textContent=stageTurns;document.querySelector("#killTotal").textContent=totalKills;document.querySelector("#turnLabel").textContent=stageTurns;document.querySelector("#progressLabel").textContent=`第 ${level} / 3 关`;document.querySelector("#phaseLabel").textContent=over?"结算中":busy?"敌人行动":movedThisTurn?"攻击阶段":"移动阶段";
+document.querySelector("#level").textContent=`${level} / 3`;document.querySelector("#playerHp").textContent=`${player.hp} / ${player.max}`;document.querySelector("#enemyCount").textContent=alive().length;document.querySelector("#threatCount").textContent=threats.length;const notice=document.querySelector("#threatNotice");notice.classList.toggle("danger",threats.length>0);if(threats.length){const names=threats.map(e=>e.type).join("、");notice.textContent=`危险预警：${threats.length}名敌人（${names}）当前可直接攻击你。${weapon==="shield"&&shieldReady?"刀盾可免疫其中一次攻击。":"请考虑调整位置或优先处理威胁来源。"}`}else{notice.textContent="威胁预警：当前没有敌人满足直接攻击条件。注意敌人移动后局势可能变化。"}document.querySelector("#endTurn").disabled=over||busy;document.querySelector("#nextLevel").disabled=busy;updateControls()}
+function collectSupplyAtPlayer(){const s=supplies.find(p=>p.available&&p.x===player.x&&p.y===player.y);if(!s)return;if(ammo>=8){say("飞刀弹药已满（8/8），补给点暂时保留；离开后可再次拾取。");log("飞刀弹药已满，补给点未消耗。");return}s.available=false;const before=ammo;ammo=Math.min(8,ammo+2);log(`拾取飞刀补给：弹药 ${before} → ${ammo}（+${ammo-before}）。`);say(`拾取补给成功！当前飞刀弹药 ${ammo}/8。`);updateControls()}
+function cellClick(x,y){
+ if(over||busy)return;
+ let e=enemyAt(x,y);
+ if(moveMode){
+  if(e||!inside(x,y)){say("特殊移动只能落在空格上。");return}
+  if(!canSpecialMove(moveMode,x,y)){say("这个位置不符合所选特殊移动的规则，或路径受到阻挡。");return}
+  const old={x:player.x,y:player.y},usedMove=moveMode;player.x=x;player.y=y;specialMoves[usedMove]--;moveMode=null;movedThisTurn=true;
+  collectSupplyAtPlayer();
+  log(`玩家使用${{rook:"车",horse:"马",elephant:"象",guard:"士"}[usedMove]}特殊移动，从${String.fromCharCode(65+old.x)}${old.y+1}移动到${String.fromCharCode(65+x)}${y+1}。`);
+  say("移动完成：现在可以使用武器攻击，或结束回合跳过攻击。");render();return;
+ }
+ if(weapon==="dual"&&dualPicks>0&&e){dualHit(e);return}
+ if(e){if(weapon==="throwing"&&movedThisTurn&&Math.abs(player.x-x)+Math.abs(player.y-y)===1){e.hp-=1;log(`匕首近战攻击${e.type}，造成1点伤害（不消耗飞刀）。`);if(e.hp<=0&&!e.reported){e.reported=true;stageKills++;totalKills++;log(`${e.type}被击败！`)}afterAction()}else say("目标不是合法移动格。攻击请按右侧攻击按钮；飞刀匕首需相邻且先完成移动。");return}
+ if(movedThisTurn){say("本回合已完成移动，请攻击或结束回合。");return}
+ if(Math.abs(player.x-x)+Math.abs(player.y-y)!==1){say("基础移动只能走上下左右相邻一格；也可选择特殊移动。");return}
+ player.x=x;player.y=y;movedThisTurn=true;moveMode=null;collectSupplyAtPlayer();log(`玩家基础移动到${String.fromCharCode(65+x)}${y+1}。`);say("移动完成：现在可以使用武器攻击，或结束回合跳过攻击。");render()
+}
+function canSpecialMove(type,x,y){
+ const dx=x-player.x,dy=y-player.y,adx=Math.abs(dx),ady=Math.abs(dy);
+ if(type==="rook"){if((dx===0&&dy===0)||(dx!==0&&dy!==0))return false;let sx=Math.sign(dx),sy=Math.sign(dy);for(let i=1;i<Math.max(adx,ady);i++)if(occupied(player.x+sx*i,player.y+sy*i))return false;return true}
+ if(type==="horse"){return adx*ady===2&&!occupied(player.x+(adx===2?Math.sign(dx):0),player.y+(ady===2?Math.sign(dy):0))}
+ if(type==="elephant"){return adx===2&&ady===2&&!occupied(player.x+dx/2,player.y+dy/2)}
+ if(type==="guard"){return adx===1&&ady===1}
+ return false
+}
+function rayCells(max){let [dx,dy]=dirs[direction],a=[];for(let i=1;i<=max;i++){let x=player.x+dx*i,y=player.y+dy*i;if(!inside(x,y))break;a.push({x,y})}return a}
+function attack(){if(over||busy)return;if(!movedThisTurn){say("请先移动，或点击“原地不动，进入攻击阶段”。");return}if(weapon==="dual"){dualPicks=2;say("双刀：请点击两个上下左右相邻的敌人目标；可对同一敌人点击两次。");return}let hit=0;
+if(weapon==="shield"){let [dx,dy]=dirs[direction],px=-dy,py=dx;let cells=[{x:player.x+dx,y:player.y+dy},{x:player.x+2*dx+px,y:player.y+2*dy+py},{x:player.x+2*dx,y:player.y+2*dy},{x:player.x+2*dx-px,y:player.y+2*dy-py}];for(let c of cells){let e=enemyAt(c.x,c.y);if(e){e.hp-=2;hit++;log(`刀盾命中${e.type}，造成2点伤害。`)}}}
+else if(weapon==="spear"){let first=true;for(let c of rayCells(4)){let e=enemyAt(c.x,c.y);if(e){let dmg=first?4:2;e.hp-=dmg;hit++;first=false;log(`长枪命中${e.type}，造成${dmg}点伤害。`)}}}
+else if(weapon==="throwing"){if(ammo<=0){say("飞刀已用完。可使用相邻匕首攻击，或切换其他武器。");return}ammo--;for(let c of rayCells(5)){let e=enemyAt(c.x,c.y);if(e){e.hp-=3;hit++;log(`飞刀命中${e.type}，造成3点伤害。`);break}}log("消耗1枚飞刀。")}
+enemies.filter(e=>e.hp<=0).forEach(e=>{if(!e.reported){log(`${e.type}被击败！`);e.reported=true;stageKills++;totalKills++}});if(!hit)log("攻击没有命中敌人。");afterAction()}
+function dualHit(e){if(dualPicks<=0||!movedThisTurn)return;e.hp-=2;dualPicks--;log(`双刀命中${e.type}，造成2点伤害；剩余攻击次数${dualPicks}。`);if(e.hp<=0&&!e.reported){e.reported=true;stageKills++;totalKills++;log(`${e.type}被击败！`)}if(dualPicks===0)afterAction();else{say("还可以选择一次相邻敌人（也可以再次点击同一敌人）。");render()}}
+function completePlayerTurn(){stageTurns++;totalTurns++}
+function getStageRating(){const target=[5,6,7][level-1];if(player.hp===3&&stageTurns<=target)return {rank:"S",stars:3,desc:"满生命通关，回合数达到优秀标准"};if(player.hp>=2&&stageTurns<=target+2)return {rank:"A",stars:2,desc:"保持较高生命，并控制了战斗回合数"};return {rank:"B",stars:1,desc:"成功通关，但仍有优化空间"}}
+function showResult(title,html){const panel=document.querySelector("#resultPanel");document.querySelector("#resultTitle").textContent=title;document.querySelector("#resultBody").innerHTML=html;panel.classList.remove("hidden")}
+function afterAction(){
+ dualPicks=0;moveMode=null;completePlayerTurn();
+ if(alive().length===0){
+  over=true;
+  const rating=getStageRating();
+  stageResults.push({level,turns:stageTurns,hp:player.hp,kills:stageKills,...rating});
+  if(level<3){
+   say(`第${level}关胜利！评价：${rating.rank}。`);
+   log(`第${level}关通关，评价${rating.rank}（${rating.stars}星）。`);
+   document.querySelector("#nextLevel").style.display="block";
+   showResult(`第${level}关结算`, `<div>本关结果：<b>胜利</b></div><div>剩余生命：${player.hp}/3</div><div>本关回合：${stageTurns}</div><div>击败敌人：${stageKills}/${stages[level-1].enemies.length}</div><div class="resultScore">${rating.rank} 级评价 · ${"★".repeat(rating.stars)}${"☆".repeat(3-rating.stars)}</div><div>${rating.desc}</div><div class="note">点击右侧“进入下一关”继续挑战。</div>`);
+  }else{
+   const stars=stageResults.reduce((n,r)=>n+r.stars,0);
+   const rank=stars>=8?"S":stars>=6?"A":"B";
+   say(`恭喜！全部三关完成，最终评价：${rank}。`);
+   log(`全部三关完成！总回合${totalTurns}，总击败敌人${totalKills}，最终评价${rank}。`);
+   showResult("全部关卡完成！", `<div>最终评价</div><div class="resultScore">${rank} 级 · ${"★".repeat(stars)}${"☆".repeat(9-stars)}</div><div>总回合数：${totalTurns}</div><div>累计击败敌人：${totalKills}/12</div><div>最终剩余生命：${player.hp}/3</div><hr><div>第一关：${stageResults[0].rank}级（${stageResults[0].turns}回合）</div><div>第二关：${stageResults[1].rank}级（${stageResults[1].turns}回合）</div><div>第三关：${stageResults[2].rank}级（${stageResults[2].turns}回合）</div><div class="note">总评规则：8–9星为S，6–7星为A，3–5星为B。</div><button id="resultRestart">重新挑战</button>`);
+   document.querySelector("#resultRestart").addEventListener("click",init);
+  }
+  render();return;
+ }
+ movedThisTurn=false;render();enemyTurn();
+}
+function lineCells(from,to){let dx=Math.sign(to.x-from.x),dy=Math.sign(to.y-from.y);if(dx!==0&&dy!==0)return null;if(dx===0&&dy===0)return [];let cells=[];let x=from.x+dx,y=from.y+dy;while(x!==to.x||y!==to.y){cells.push({x,y});x+=dx;y+=dy}return cells}
+function clearLine(from,to){let cells=lineCells(from,to);return cells!==null&&cells.every(c=>!occupied(c.x,c.y))}
+function rookCanAttack(e){return (e.x===player.x||e.y===player.y)&&clearLine(e,player)}
+function horseLegClear(e,dx,dy){let leg;if(Math.abs(dx)===2)leg={x:e.x+Math.sign(dx),y:e.y};else leg={x:e.x,y:e.y+Math.sign(dy)};return !occupied(leg.x,leg.y)}
+function horseCanAttack(e){let dx=player.x-e.x,dy=player.y-e.y;return Math.abs(dx)*Math.abs(dy)===2&&horseLegClear(e,dx,dy)}
+function cannonCanAttack(e){let forward=player.x===e.x&&player.y>e.y;let leftOrRight=player.y===e.y&&player.x!==e.x;if(!forward&&!leftOrRight)return false;let between=lineCells(e,player);if(!between)return false;return between.filter(c=>occupied(c.x,c.y)).length===1}
+function getThreats(){return alive().filter(e=>e.type==="炮"?cannonCanAttack(e):e.type==="马"?horseCanAttack(e):e.type==="车"?rookCanAttack(e):false)}
+function legalRookMoves(e){let out=[];for(let [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){let x=e.x+dx,y=e.y+dy;while(inside(x,y)&&!occupied(x,y)){out.push({x,y});x+=dx;y+=dy}}return out}
+function legalHorseMoves(e){let out=[];for(let dx of [-2,-1,1,2])for(let dy of [-2,-1,1,2]){if(Math.abs(dx)+Math.abs(dy)!==3)continue;let x=e.x+dx,y=e.y+dy;if(inside(x,y)&&!occupied(x,y)&&horseLegClear(e,dx,dy))out.push({x,y})}return out}
+function chooseCloser(moves){moves.sort((a,b)=>Math.abs(a.x-player.x)+Math.abs(a.y-player.y)-(Math.abs(b.x-player.x)+Math.abs(b.y-player.y)));return moves[0]||null}
+function actCannon(e){if(cannonCanAttack(e)){damagePlayer(e,"炮隔子发射，命中玩家");return}log("炮保持固定位置，当前没有符合炮击条件的线路。")}
+function chooseHorseMove(e){
+ const moves=legalHorseMoves(e);
+ let best=null;
+ for(const move of moves){
+  const old={x:e.x,y:e.y};
+  e.x=move.x;e.y=move.y;
+  // 评估马移动后是否能在下一轮直接攻击玩家；模拟时原位置会正确视为空格。
+  const threatens=horseCanAttack(e);
+  e.x=old.x;e.y=old.y;
+  const distance=Math.abs(move.x-player.x)+Math.abs(move.y-player.y);
+  const score=(threatens?1000:0)-distance;
+  if(!best||score>best.score)best={...move,score,threatens};
+ }
+ return best;
+}
+function actHorse(e){
+ if(horseCanAttack(e)){damagePlayer(e,"马按象棋走日攻击玩家");return}
+ const next=chooseHorseMove(e);
+ if(next){e.x=next.x;e.y=next.y;log(next.threatens?"马移动至可威胁玩家的位置。":"马按象棋走日向玩家靠近。")}
+ else log("马被棋子或棋盘边界限制，无法移动。")
+}
+function actRook(e){if(rookCanAttack(e)){damagePlayer(e,"车沿直线攻击玩家");return}let next=chooseCloser(legalRookMoves(e));if(next){e.x=next.x;e.y=next.y;log("车沿横线或竖线移动。")}else log("车的直线路径被阻挡，无法移动。")}
+function damagePlayer(e,msg){if(weapon==="shield"&&shieldReady){shieldReady=false;log(`刀盾效果触发：免疫${e.type}本次攻击！`)}else{player.hp--;log(`${msg}，玩家受到1点伤害。`)}}
+function enemyTurn(){if(over||busy)return;busy=true;say("敌人行动中……");
+ // 按炮→马→车行动；同类型有多名敌人时，全部依次行动。
+ for(const type of ["炮","马","车"]){
+  const units=enemies.filter(e=>e.type===type&&e.hp>0);
+  for(const e of units){
+   if(e.hp<=0||player.hp<=0)continue;
+   if(type==="炮")actCannon(e);else if(type==="马")actHorse(e);else actRook(e);
+  }
+ }
+ busy=false;if(player.hp<=0){player.hp=0;over=true;say("失败！玩家生命值归零。点击重新开始再试一次。");log("玩家被击败。");showResult("挑战失败", `<div>到达关卡：第${level}关</div><div>本关回合：${stageTurns}</div><div>累计击败敌人：${totalKills}</div><div>累计回合数：${totalTurns}</div><button id="resultRestart">重新开始</button>`);document.querySelector("#resultRestart").addEventListener("click",init)}else{movedThisTurn=false;moveMode=null;say("你的回合：先移动或原地不动，再进行攻击。")}render()}
+document.querySelectorAll("[data-weapon]").forEach(b=>b.addEventListener("click",()=>{if(over||busy)return;weapon=b.dataset.weapon;dualPicks=0;updateControls();say(`已切换为${b.textContent}。`);render()}));
+document.querySelectorAll("[data-dir]").forEach(b=>b.addEventListener("click",()=>{if(over||busy)return;direction=b.dataset.dir;updateControls();say(`攻击方向：${b.textContent}。`);render()}));
+document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>{if(over||busy||movedThisTurn||specialMoves[b.dataset.move]===0)return;moveMode=b.dataset.move;say(`已选择${{rook:"车",horse:"马",elephant:"象",guard:"士"}[moveMode]}特殊移动，请点击棋盘上的合法空格。`);render()}));
+document.querySelector("#stayBtn").addEventListener("click",()=>{if(!over&&!busy&&!movedThisTurn){movedThisTurn=true;moveMode=null;log("玩家选择原地不动，进入攻击阶段。");say("已进入攻击阶段：可以使用武器攻击，或结束回合。");render()}});
+document.querySelector("#attackBtn").addEventListener("click",attack);document.querySelector("#endTurn").addEventListener("click",()=>{if(!over&&!busy){dualPicks=0;moveMode=null;movedThisTurn=false;log("玩家结束回合（跳过攻击）。");completePlayerTurn();enemyTurn()}});document.querySelector("#nextLevel").addEventListener("click",()=>{if(over&&level<3){level++;loadStage(false)}});document.querySelector("#restart").addEventListener("click",init);init();
+</script></body></html>
